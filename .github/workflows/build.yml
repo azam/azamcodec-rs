@@ -11,7 +11,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 9 * * 3'
 
 jobs:
   run-tests:
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout-${{matrix.channel}}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: setup-toolchain-${{matrix.channel}}
         uses: actions-rs/toolchain@v1
         with:
