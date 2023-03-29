@@ -43,8 +43,8 @@ jobs:
         run: cargo check
       - name: cargo-bench-${{matrix.channel}}
         run: cargo bench
-      - name: upload-bench-results
+      - name: upload-bench-results-${{matrix.channel}}
         uses: actions/upload-artifact@v1
         with:
-          name: azamcodec_${{github.sha}}_bench
+          name: azamcodec_bench_${{matrix.channel}}_${{github.sha}}
           path: ./target/criterion
