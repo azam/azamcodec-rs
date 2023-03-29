@@ -12,9 +12,9 @@ on:
   pull_request:
     - opened
     - reopened
-    - synchronize # 'synchronize' is when BASE is sync'd with HEAD
+    - synchronize
   schedule:
-    - cron: '0 9 * * 3' # 9am UTC every Wednesday
+    - cron: '0 9 * * 3'
   workflow_dispatch:
 
 jobs:
