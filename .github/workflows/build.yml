@@ -36,6 +36,7 @@ jobs:
           profile: minimal
           toolchain: ${{matrix.channel}}
           override: true
+          components: rustfmt
       - name: cargo-build-${{matrix.channel}}
         run: cargo build
       - name: cargo-check-${{matrix.channel}}
