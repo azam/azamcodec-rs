@@ -4,6 +4,8 @@
 [![Crate](https://img.shields.io/crates/v/azamcodec.svg)](https://crates.io/crates/azamcodec)
 [![Docs](https://docs.rs/azamcodec/badge.svg)](https://docs.rs/azamcodec)
 
+An encoder and decoder implementation in Rust for [Azam Codec](https://github.com/azam/azamcodec), a lexicographically sortable multi-section base16 encoding of byte array. Zero external dependencies.
+
 ## License
 
 MIT Licence

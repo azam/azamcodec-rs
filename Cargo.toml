@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/azam/azamcodec-rs"
 description = "Encoder and decoder library for Azam Codec"
 categories = ["encoding", "decoding", "data-structures"]
-keywords = [ "azam", "identifier", "sortable", "guid", "unique", "uuid" ]
+keywords = [ "azam", "identifier", "sortable" ]
 
 [lib]
 name = "azamcodec"
