@@ -4,15 +4,13 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  workflow_dispatch:
-  # 'synchronize' is when BASE is sync'd with HEAD
   pull_request:
     - opened
     - reopened
-    - synchronize
-  # 9am UTC every Friday
+    - synchronize # 'synchronize' is when BASE is sync'd with HEAD
   schedule:
-    - cron: '0 9 * * 5'
+    - cron: '0 9 * * 5' # 9am UTC every Friday
+  workflow_dispatch:
 
 jobs:
   run-benchmark:
@@ -44,8 +42,7 @@ jobs:
         run: cargo check
       - name: cargo-bench-${{matrix.channel}}
         run: cargo bench
-        # Upload benchmark result as workflow artifact
       - uses: actions/upload-artifact@v1
         with:
           name: azamcodec_${{github.sha}}_bench
-          path: ./target/criterion
+          path: ./target/criterion # Upload benchmark result as workflow artifact
