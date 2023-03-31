@@ -559,11 +559,23 @@ mod tests {
     fn test_decode_uints_invalid_last_nybble() {
         assert_decode_uints_err(
             ErrorKind::UnexpectedEof,
-            "zz",
-            "zzzz",
-            "zzzzzzzz",
-            "zzzzzzzzzzzzzzzz",
-            "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+            "hh",
+            "hhhh",
+            "hhhhhhhh",
+            "hhhhhhhhhhhhhhhh",
+            "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+        );
+    }
+
+    #[test]
+    fn test_decode_uints_invalid_last_nybble_odd() {
+        assert_decode_uints_err(
+            ErrorKind::UnexpectedEof,
+            "h",
+            "hhh",
+            "hhhhhhh",
+            "hhhhhhhhhhhhhhh",
+            "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
         );
     }
 
