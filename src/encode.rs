@@ -248,37 +248,14 @@ azam_encode_impl!(u128);
 #[macro_export]
 macro_rules! azam_encode {
     () => {};
-    ($v1:expr) => {{
-        $v1.azam_encode()
+    ($value:expr) => {{
+        $value.azam_encode()
     }};
-    ($v1:expr, $v2:expr) => {{
+    ($($values:expr),*) => {{
         let mut bytes = Vec::<u8>::new();
-        $v1.azam_encode_write(&mut bytes).unwrap();
-        $v2.azam_encode_write(&mut bytes).unwrap();
-        String::from_utf8(bytes).unwrap()
-    }};
-    ($v1:expr, $v2:expr, $v3:expr) => {{
-        let mut bytes = Vec::<u8>::new();
-        $v1.azam_encode_write(&mut bytes).unwrap();
-        $v2.azam_encode_write(&mut bytes).unwrap();
-        $v3.azam_encode_write(&mut bytes).unwrap();
-        String::from_utf8(bytes).unwrap()
-    }};
-    ($v1:expr, $v2:expr, $v3:expr, $v4:expr) => {{
-        let mut bytes = Vec::<u8>::new();
-        $v1.azam_encode_write(&mut bytes).unwrap();
-        $v2.azam_encode_write(&mut bytes).unwrap();
-        $v3.azam_encode_write(&mut bytes).unwrap();
-        $v4.azam_encode_write(&mut bytes).unwrap();
-        String::from_utf8(bytes).unwrap()
-    }};
-    ($v1:expr, $v2:expr, $v3:expr, $v4:expr, $v5:expr) => {{
-        let mut bytes = Vec::<u8>::new();
-        $v1.azam_encode_write(&mut bytes).unwrap();
-        $v2.azam_encode_write(&mut bytes).unwrap();
-        $v3.azam_encode_write(&mut bytes).unwrap();
-        $v4.azam_encode_write(&mut bytes).unwrap();
-        $v5.azam_encode_write(&mut bytes).unwrap();
+        $(
+            $values.azam_encode_write(&mut bytes).unwrap();
+        )*
         String::from_utf8(bytes).unwrap()
     }};
 }

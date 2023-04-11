@@ -2,13 +2,10 @@ name: bench
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
   schedule:
     - cron: '0 9 * * 5'
   workflow_dispatch:
