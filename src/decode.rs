@@ -1,4 +1,4 @@
-use std::io::{Cursor, ErrorKind, Read, Result, Write};
+use std::io::{ErrorKind, Read, Result, Write};
 use std::mem;
 
 /// Returns the nybble value [0..15] for given byte symbol.
@@ -292,8 +292,7 @@ macro_rules! azam_decode {
     ($r:expr) => {Result::<()>::Ok(())};
     ($r:expr $(,$t:ty)*) => {
         'block: {
-            let bytes = $r.as_bytes();
-            let reader = &mut Cursor::new(bytes);
+            let reader = &mut $r.as_bytes();
             Ok((
                 $(
                     match <$t>::azam_decode_read(reader) {
