@@ -1,4 +1,4 @@
-use std::io::{ErrorKind, Read, Result, Write};
+use std::io::{Cursor, ErrorKind, Read, Result, Write};
 use std::mem;
 
 /// Returns the nybble value [0..15] for given byte symbol.
@@ -288,93 +288,20 @@ azam_decode_uint_impl!(u128);
 /// ```
 #[macro_export]
 macro_rules! azam_decode {
-    ($r:expr, $t1:ty) => {
+    () => {Result::<()>::Ok(())};
+    ($r:expr) => {Result::<()>::Ok(())};
+    ($r:expr $(,$t:ty)*) => {
         'block: {
-            let value1 = match <$t1>::azam_decode($r) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty) => {
-        'block: {
-            let reader = &mut $r.as_bytes();
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty, $t3:ty) => {
-        'block: {
-            let reader = &mut $r.as_bytes();
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value3 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2, value3))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty, $t3:ty, $t4:ty) => {
-        'block: {
-            let reader = &mut $r.as_bytes();
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value3 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value4 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2, value3, value4))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty, $t3:ty, $t4:ty, $t5:ty) => {
-        'block: {
-            let reader = &mut $r.as_bytes();
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value3 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value4 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value5 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2, value3, value4, value5))
+            let bytes = $r.as_bytes();
+            let reader = &mut Cursor::new(bytes);
+            Ok((
+                $(
+                    match <$t>::azam_decode_read(reader) {
+                        Ok(v) => v,
+                        Err(e) => break 'block Err(e),
+                    }
+                ),*
+            ))
         }
     };
 }
@@ -394,94 +321,19 @@ macro_rules! azam_decode {
 /// ```
 #[macro_export]
 macro_rules! azam_decode_read {
-    ($r:expr, $t1:ty) => {
+    () => {Result::<()>::Ok(())};
+    ($r:expr) => {Result::<()>::Ok(())};
+    ($r:expr $(,$t:ty)*) => {
         'block: {
             let reader = $r;
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty) => {
-        'block: {
-            let reader = $r;
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty, $t3:ty) => {
-        'block: {
-            let reader = $r;
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value3 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2, value3))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty, $t3:ty, $t4:ty) => {
-        'block: {
-            let reader = $r;
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value3 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value4 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2, value3, value4))
-        }
-    };
-    ($r:expr, $t1:ty, $t2:ty, $t3:ty, $t4:ty, $t5:ty) => {
-        'block: {
-            let reader = $r;
-            let value1 = match <$t1>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value2 = match <$t2>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value3 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value4 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            let value5 = match <$t3>::azam_decode_read(reader) {
-                Ok(v) => v,
-                Err(e) => break 'block Err(e),
-            };
-            Ok((value1, value2, value3, value4, value5))
+            Ok((
+                $(
+                    match <$t>::azam_decode_read(reader) {
+                        Ok(v) => v,
+                        Err(e) => break 'block Err(e),
+                    }
+                ),*
+            ))
         }
     };
 }
@@ -492,9 +344,41 @@ mod tests {
 
     #[test]
     fn test_azam_decode_macro() {
+        assert_eq!((), azam_decode!("123").unwrap());
+        assert_eq!((0x01u8), azam_decode!("123", u8).unwrap());
+        assert_eq!((0x01u8, 0x02u16), azam_decode!("123", u8, u16).unwrap());
+        assert_eq!(
+            (0x01u8, 0x02u16, 0x03u32),
+            azam_decode!("123", u8, u16, u32).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_azam_decode_macro_err() {
+        assert_eq!(
+            ErrorKind::UnexpectedEof,
+            azam_decode!("", u8, u16).unwrap_err().kind()
+        );
+        assert_eq!(
+            ErrorKind::UnexpectedEof,
+            azam_decode!("12", u8, u16, u32).unwrap_err().kind()
+        );
+        assert_eq!(
+            ErrorKind::InvalidData,
+            azam_decode!("_2", u8, u16).unwrap_err().kind()
+        );
+    }
+
+    #[test]
+    fn test_azam_decode_read_macro() {
+        assert_eq!((), azam_decode_read!("123").unwrap());
+        assert_eq!(
+            (0x01u8),
+            azam_decode_read!(&mut "123".as_bytes(), u8).unwrap()
+        );
         assert_eq!(
             (0x01u8, 0x02u16),
-            azam_decode_read!(&mut "12".as_bytes(), u8, u16).unwrap()
+            azam_decode_read!(&mut "123".as_bytes(), u8, u16).unwrap()
         );
         assert_eq!(
             (0x01u8, 0x02u16, 0x03u32),
@@ -503,10 +387,16 @@ mod tests {
     }
 
     #[test]
-    fn test_azam_decode_macro_err() {
+    fn test_azam_decode_read_macro_err() {
         assert_eq!(
             ErrorKind::UnexpectedEof,
             azam_decode_read!(&mut "".as_bytes(), u8, u16)
+                .unwrap_err()
+                .kind()
+        );
+        assert_eq!(
+            ErrorKind::UnexpectedEof,
+            azam_decode_read!(&mut "12".as_bytes(), u8, u16, u32)
                 .unwrap_err()
                 .kind()
         );
