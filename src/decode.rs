@@ -292,20 +292,23 @@ azam_decode_uint_impl!(u128, 16);
 macro_rules! azam_decode {
     () => {Result::<()>::Ok(())};
     ($r:expr) => {Result::<()>::Ok(())};
-    ($r:expr $(,$t:ty)*) => {
-        'block: {
-            use $crate::decode::AzamDecode;
-            let reader = &mut $r.as_bytes();
-            Ok((
+    ($r:expr $(,$t:ty)*) => {{
+        use $crate::decode::AzamDecode;
+        let reader = &mut $r.as_bytes();
+        // Using loop hack to not to use break-labels.
+        // This might help when using strict clippy rules.
+        // https://github.com/rust-lang/rfcs/pull/2046
+        loop {
+            break Ok((
                 $(
                     match <$t>::azam_decode_read(reader) {
                         Ok(v) => v,
-                        Err(e) => break 'block Err(e),
+                        Err(e) => break Err(e),
                     }
                 ),*
-            ))
+            ));
         }
-    };
+    }};
 }
 
 /// Macro to decode Azam codec encoded stream to tuples of any types that implements the [`AzamDecode`] trait.
@@ -325,20 +328,23 @@ macro_rules! azam_decode {
 macro_rules! azam_decode_read {
     () => {Result::<()>::Ok(())};
     ($r:expr) => {Result::<()>::Ok(())};
-    ($r:expr $(,$t:ty)*) => {
-        'block: {
-            use $crate::decode::AzamDecode;
-            let reader = $r;
-            Ok((
+    ($r:expr $(,$t:ty)*) => {{
+        use $crate::decode::AzamDecode;
+        let reader = $r;
+        // Using loop hack to not to use break-labels.
+        // This might help when using strict clippy rules.
+        // https://github.com/rust-lang/rfcs/pull/2046
+        loop {
+            break Ok((
                 $(
                     match <$t>::azam_decode_read(reader) {
                         Ok(v) => v,
-                        Err(e) => break 'block Err(e),
+                        Err(e) => break Err(e),
                     }
                 ),*
             ))
         }
-    };
+    }};
 }
 
 #[cfg(test)]
