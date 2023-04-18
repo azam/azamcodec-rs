@@ -250,36 +250,38 @@ impl AzamDecode for u8 {
 }
 
 macro_rules! azam_decode_uint_impl {
-    ($t:ty) => {
+    ($t:ty, $s:expr) => {
         impl AzamDecode for $t {
             fn azam_decode_read<R: Read + Sized>(reader: &mut R) -> Result<Self> {
-                let size = mem::size_of::<Self>();
+                // Saving one call instead of calling below
+                // let size = mem::size_of::<Self>();
+                const SIZE: usize = $s;
                 let mut bytes = Vec::<u8>::new();
                 // Limit to twice the byte size of type
-                azam_decode_read_until(reader, &mut bytes, (size * 2) as u64)?;
+                $crate::decode::azam_decode_read_until(reader, &mut bytes, (SIZE * 2) as u64)?;
                 // Extend byte array to byte size of type and prepend with zeroes
                 let original_len = bytes.len();
-                if original_len < size {
-                    bytes.resize(size, 0);
-                    bytes.rotate_right(size - original_len);
+                if original_len < SIZE {
+                    bytes.resize(SIZE, 0);
+                    bytes.rotate_right(SIZE - original_len);
                 }
-                Ok(Self::from_be_bytes(bytes[..size].try_into().unwrap()))
+                Ok(Self::from_be_bytes(bytes[..SIZE].try_into().unwrap()))
             }
         }
     };
 }
 
-azam_decode_uint_impl!(u16);
-azam_decode_uint_impl!(u32);
-azam_decode_uint_impl!(u64);
-azam_decode_uint_impl!(u128);
+azam_decode_uint_impl!(u16, 2);
+azam_decode_uint_impl!(u32, 4);
+azam_decode_uint_impl!(u64, 8);
+azam_decode_uint_impl!(u128, 16);
 
 /// Macro to decode Azam encoded string to tuples of any types that implements the [`AzamDecode`] trait
 ///
 /// # Examples
 ///
 /// ```rust
-/// use azamcodec::{azam_decode, decode::AzamDecode};
+/// use azamcodec::azam_decode;
 /// // Decode multiple sections of Azam-encoded string to a tuple using azam_decode! macro.
 /// // "xytxvyyf" decodes to 0xdeadbeefu32.
 /// // "h5" decodes to 0x15u8.
@@ -292,6 +294,7 @@ macro_rules! azam_decode {
     ($r:expr) => {Result::<()>::Ok(())};
     ($r:expr $(,$t:ty)*) => {
         'block: {
+            use $crate::decode::AzamDecode;
             let reader = &mut $r.as_bytes();
             Ok((
                 $(
@@ -324,6 +327,7 @@ macro_rules! azam_decode_read {
     ($r:expr) => {Result::<()>::Ok(())};
     ($r:expr $(,$t:ty)*) => {
         'block: {
+            use $crate::decode::AzamDecode;
             let reader = $r;
             Ok((
                 $(

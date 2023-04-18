@@ -2,18 +2,24 @@
 
 changelog:
   categories:
+    - title: "🏁 Release"
+      labels:
+        - release
     - title: "⚠️ Breaking Changes"
       labels:
         - Semver-Major
         - breaking-change
-    - title: "🎁 New Features"
+    - title: "🆕 Enhancements"
       labels:
         - Semver-Minor
         - enhancement
     - title: "🕷 Fixes"
       labels:
         - fix
-    - title: "🕷 Others"
+    - title: "🛠️ Dependencies"
+      labels:
+        - dependencies
+    - title: "📝 Others"
       labels:
         - '*'
       exclude:
@@ -22,6 +28,4 @@ changelog:
           - fix
           - breaking-change
           - enhancement
-    - title: "👒 Dependencies"
-      labels:
-        - dependencies
+          - release
