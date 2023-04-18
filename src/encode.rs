@@ -211,34 +211,34 @@ pub trait AzamEncode {
     fn azam_encode(&self) -> String;
 }
 
-macro_rules! azam_encode_impl {
+macro_rules! azam_encode_uint_impl {
     ($t:ty) => {
         impl AzamEncode for $t {
             fn azam_encode_write<W: Write>(&self, writer: &mut W) -> Result<usize> {
-                azam_encode_write(&mut self.to_be_bytes().as_ref(), writer)
+                $crate::encode::azam_encode_write(&mut self.to_be_bytes().as_ref(), writer)
             }
 
             fn azam_encode(&self) -> String {
                 let mut bytes = Vec::<u8>::new();
-                self.azam_encode_write(&mut bytes).unwrap();
+                $crate::encode::AzamEncode::azam_encode_write(self, &mut bytes).unwrap();
                 String::from_utf8(bytes).unwrap()
             }
         }
     };
 }
 
-azam_encode_impl!(u8);
-azam_encode_impl!(u16);
-azam_encode_impl!(u32);
-azam_encode_impl!(u64);
-azam_encode_impl!(u128);
+azam_encode_uint_impl!(u8);
+azam_encode_uint_impl!(u16);
+azam_encode_uint_impl!(u32);
+azam_encode_uint_impl!(u64);
+azam_encode_uint_impl!(u128);
 
 /// Macro to encode tuples of any types that implements the [`AzamEncode`] trait to Azam codec encoded string.
 ///
 /// # Examples
 ///
 /// ```rust
-/// use azamcodec::{azam_encode, encode::AzamEncode};
+/// use azamcodec::azam_encode;
 /// // Encode multiple values as Azam-encoded string, using azam_encode! macro.
 /// // 0xdeadbeefu32 encodes to "xytxvyyf".
 /// // 0x15u8 encodes to "h5".
@@ -249,12 +249,12 @@ azam_encode_impl!(u128);
 macro_rules! azam_encode {
     () => {};
     ($value:expr) => {{
-        $value.azam_encode()
+        $crate::encode::AzamEncode::azam_encode(&$value)
     }};
     ($($values:expr),*) => {{
         let mut bytes = Vec::<u8>::new();
         $(
-            $values.azam_encode_write(&mut bytes).unwrap();
+            $crate::encode::AzamEncode::azam_encode_write(&$values, &mut bytes).unwrap();
         )*
         String::from_utf8(bytes).unwrap()
     }};
