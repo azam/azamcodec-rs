@@ -1,5 +1,4 @@
 use std::io::{ErrorKind, Read, Result, Write};
-use std::mem;
 
 /// Returns the nybble value [0..15] for given byte symbol.
 /// If nybble is a high nybble, 16 will be added to the value.

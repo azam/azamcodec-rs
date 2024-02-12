@@ -18,12 +18,23 @@ path = "benches/decode_benchmark.rs"
 harness = false
 
 [[bench]]
+name = "decode_odd_benchmark"
+path = "benches/decode_odd_benchmark.rs"
+harness = false
+
+[[bench]]
 name = "encode_benchmark"
 path = "benches/encode_benchmark.rs"
 harness = false
 
+[[bench]]
+name = "encode_odd_benchmark"
+path = "benches/encode_odd_benchmark.rs"
+harness = false
+
 [dev-dependencies]
-criterion = { version = "0.4", features = ["html_reports"] }
+criterion = { version = "0.5.1", features = ["html_reports"] }
+uuid = "1.7.0"
 
 [package.metadata.docs.rs]
 all-features = true

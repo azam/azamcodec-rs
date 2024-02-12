@@ -1,7 +1,7 @@
 use std::io::{ErrorKind, Read, Result, Write};
 
-const LOWER_ALPHABETS: &'static [u8] = b"0123456789abcdef";
-const HIGHER_ALPHABETS: &'static [u8] = b"ghjkmnpqrstvwxyz";
+const LOWER_ALPHABETS: &[u8] = b"0123456789abcdef";
+const HIGHER_ALPHABETS: &[u8] = b"ghjkmnpqrstvwxyz";
 
 enum LeadNybbleStatus {
     None,
@@ -64,13 +64,13 @@ pub fn azam_encode_write<R: Read, W: Write>(reader: &mut R, writer: &mut W) -> R
                         // Flush previous byte as highs
                         let high_nybble = prev_byte >> 4;
                         let low_nybble = prev_byte & 0x0fu8;
-                        writer.write(&[HIGHER_ALPHABETS[high_nybble as usize]])?;
-                        writer.write(&[HIGHER_ALPHABETS[low_nybble as usize]])?;
+                        writer.write_all(&[HIGHER_ALPHABETS[high_nybble as usize]])?;
+                        writer.write_all(&[HIGHER_ALPHABETS[low_nybble as usize]])?;
                     }
                     LeadNybbleStatus::PreviousLow => {
                         // Only flush previous byte's low nybble as high
                         let low_nybble = prev_byte & 0x0fu8;
-                        writer.write(&[HIGHER_ALPHABETS[low_nybble as usize]])?;
+                        writer.write_all(&[HIGHER_ALPHABETS[low_nybble as usize]])?;
                         lead_nybble = LeadNybbleStatus::PreviousHigh;
                     }
                 }
@@ -95,7 +95,7 @@ pub fn azam_encode_write<R: Read, W: Write>(reader: &mut R, writer: &mut W) -> R
             if count > 0 {
                 // Previous byte is 0x00
                 // Flush as low nybble
-                writer.write(&[LOWER_ALPHABETS[0]])?;
+                writer.write_all(&[LOWER_ALPHABETS[0]])?;
             }
         }
         LeadNybbleStatus::PreviousHigh => {
@@ -103,13 +103,13 @@ pub fn azam_encode_write<R: Read, W: Write>(reader: &mut R, writer: &mut W) -> R
             // Flush previous byte's low nybble as low
             let high_nybble = prev_byte >> 4;
             let low_nybble = prev_byte & 0x0fu8;
-            writer.write(&[HIGHER_ALPHABETS[high_nybble as usize]])?;
-            writer.write(&[LOWER_ALPHABETS[low_nybble as usize]])?;
+            writer.write_all(&[HIGHER_ALPHABETS[high_nybble as usize]])?;
+            writer.write_all(&[LOWER_ALPHABETS[low_nybble as usize]])?;
         }
         LeadNybbleStatus::PreviousLow => {
             // Flush previous byte's low nybble as low
             let low_nybble = prev_byte & 0x0fu8;
-            writer.write(&[LOWER_ALPHABETS[low_nybble as usize]])?;
+            writer.write_all(&[LOWER_ALPHABETS[low_nybble as usize]])?;
         }
     }
 
@@ -172,8 +172,8 @@ pub fn azam_encode_bytes(value: Vec<u8>) -> String {
 /// ```
 pub fn azam_encode_bytes_vec_to_bytes(value: Vec<Vec<u8>>) -> Vec<u8> {
     let mut encoded = Vec::<u8>::new();
-    for i in 0..value.len() {
-        encoded.append(&mut azam_encode_bytes_to_bytes(value[i].clone()));
+    for vec in value {
+        encoded.append(&mut azam_encode_bytes_to_bytes(vec.clone()));
     }
     encoded
 }
