@@ -4,7 +4,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use uuid::Uuid;
 
 fn test_decoder(instance: &mut Criterion) {
-    instance.bench_function("uuid_to_string", |bencher| {
+    instance.bench_function("uuid_to_string_odd", |bencher| {
         // Data preparation
         let uuid_value = Uuid::parse_str("0fffffffffffffffffffffffffffffff").unwrap();
 
