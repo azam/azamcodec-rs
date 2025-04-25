@@ -34,7 +34,7 @@ harness = false
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
-uuid = "1.7.0"
+uuid = "1.16.0"
 
 [package.metadata.docs.rs]
 all-features = true
