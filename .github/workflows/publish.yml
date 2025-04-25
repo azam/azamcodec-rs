@@ -17,11 +17,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: setup-toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: stable
-          override: true
+          components: rustfmt
       - name: cargo-check
         uses: actions-rs/cargo@v1
         with:

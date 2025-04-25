@@ -29,11 +29,9 @@ jobs:
       - name: checkout-${{matrix.channel}}
         uses: actions/checkout@v3
       - name: setup-toolchain-${{matrix.channel}}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{matrix.channel}}
-          override: true
           components: rustfmt
       - name: cargo-build-${{matrix.channel}}
         run: cargo build
@@ -42,7 +40,7 @@ jobs:
       - name: cargo-bench-${{matrix.channel}}
         run: cargo bench
       - name: upload-bench-results-${{matrix.channel}}
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: azamcodec_bench_${{matrix.channel}}_${{github.sha}}
           path: ./target/criterion
