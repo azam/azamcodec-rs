@@ -1,8 +1,18 @@
 use azamcodec::azam_decode;
 use azamcodec::decode::AzamDecode;
 use criterion::{criterion_group, criterion_main, Criterion};
+use uuid::Uuid;
 
 fn test_decoder(instance: &mut Criterion) {
+    instance.bench_function("uuid_parse_str", |bencher| {
+        // Data preparation
+
+        // Benchmark iteration in closure
+        bencher.iter(|| {
+            let _x = Uuid::parse_str("ffffffffffffffffffffffffffffffff").unwrap();
+        })
+    });
+
     instance.bench_function("azam_decode_u8", |bencher| {
         // Data preparation
 

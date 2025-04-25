@@ -34,11 +34,9 @@ jobs:
       - name: checkout-${{matrix.channel}}
         uses: actions/checkout@v3
       - name: setup-toolchain-${{matrix.channel}}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: ${{matrix.channel}}
-          override: true
           components: rustfmt
       - name: cargo-build-${{matrix.channel}}
         run: cargo build

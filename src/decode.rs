@@ -1,5 +1,12 @@
-use std::io::{ErrorKind, Read, Result, Write};
-use std::mem;
+use std::io::{Error, ErrorKind, Read, Result, Write};
+
+const INITIAL_CAPACITY: usize = if cfg!(target_pointer_width = "64") {
+    8
+} else if cfg!(target_pointer_width = "32") {
+    4
+} else {
+    2
+};
 
 /// Returns the nybble value [0..15] for given byte symbol.
 /// If nybble is a high nybble, 16 will be added to the value.
@@ -91,7 +98,7 @@ pub fn azam_decode_read<R: Read + ?Sized, W: Write>(
     reader: &mut R,
     writer: &mut W,
 ) -> Result<usize> {
-    let mut bytes = Vec::<u8>::new();
+    let mut bytes = Vec::<u8>::with_capacity(INITIAL_CAPACITY);
     let mut byte = [0u8; 1];
     let mut prev_nybble = 0u8;
     let mut is_odd = false;
@@ -101,31 +108,26 @@ pub fn azam_decode_read<R: Read + ?Sized, W: Write>(
         // Read one byte, or exit loop if read fails (EOF etc)
         reader.read_exact(&mut byte)?;
         count += 1;
-        match nybble_value(byte[0]) {
-            Some(value) => {
-                // Flip oddness
-                is_odd = !is_odd;
-                if !lead_nybble_checked {
-                    // If the first byte starts with a high nibble 0 (g or G), return error as invalid data
-                    if value == 0x10u8 {
-                        return Err(ErrorKind::InvalidData.into());
-                    }
-                    lead_nybble_checked = true;
-                }
-                // Take previous nybble, shift left 4 and bit or current nybble
-                if !is_odd {
-                    bytes.push((prev_nybble << 4) | (value & 0x0fu8));
-                }
-                // Remember current nybble for next iteration
-                prev_nybble = value & 0x0fu8;
-                // If current nybble is a low nybble, this is the last one, so exit loop
-                if value >> 4 == 00u8 {
-                    break;
-                }
-            }
-            None => {
+        // Use ok_or_else instead ok_or, because ok_or eagerly evaluates the value, which performance is significant at this level
+        let value = nybble_value(byte[0]).ok_or_else(|| Error::from(ErrorKind::InvalidData))?;
+        // Flip oddness
+        is_odd = !is_odd;
+        if !lead_nybble_checked {
+            // If the first byte starts with a high nibble 0 (g or G), return error as invalid data
+            if value == 0x10u8 {
                 return Err(ErrorKind::InvalidData.into());
             }
+            lead_nybble_checked = true;
+        }
+        // Take previous nybble, shift left 4 and bit or current nybble
+        if !is_odd {
+            bytes.push((prev_nybble << 4) | (value & 0x0fu8));
+        }
+        // Remember current nybble for next iteration
+        prev_nybble = value & 0x0fu8;
+        // If current nybble is a low nybble, this is the last one, so exit loop
+        if value >> 4 == 00u8 {
+            break;
         }
     }
     // If nybble count is odd, then there is one unwritten nybble.
@@ -209,13 +211,9 @@ pub fn azam_decode_bytes_vec(value: &str) -> Result<Vec<Vec<u8>>> {
     while index < value.len() {
         let mut bytes = Vec::<u8>::new();
         let mut reader = &value.as_bytes()[index..];
-        match azam_decode_read(&mut reader, &mut bytes) {
-            Ok(read_size) => {
-                all_bytes.push(bytes);
-                index += read_size;
-            }
-            Err(err) => return Err(err),
-        }
+        let read_size = azam_decode_read(&mut reader, &mut bytes)?;
+        all_bytes.push(bytes);
+        index += read_size;
     }
     Ok(all_bytes)
 }

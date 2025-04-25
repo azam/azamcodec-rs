@@ -1,8 +1,19 @@
 use azamcodec::azam_encode;
 use azamcodec::encode::AzamEncode;
 use criterion::{criterion_group, criterion_main, Criterion};
+use uuid::Uuid;
 
 fn test_decoder(instance: &mut Criterion) {
+    instance.bench_function("uuid_to_string", |bencher| {
+        // Data preparation
+        let uuid_value = Uuid::parse_str("ffffffffffffffffffffffffffffffff").unwrap();
+
+        // Benchmark iteration in closure
+        bencher.iter(|| {
+            let _x = uuid_value.to_string();
+        })
+    });
+
     instance.bench_function("azam_encode_u8", |bencher| {
         // Data preparation
 
