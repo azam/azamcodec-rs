@@ -6,7 +6,7 @@ authors = [ "Azamshul Azizy <azamshul@gmail.com>" ]
 license = "MIT"
 repository = "https://github.com/azam/azamcodec-rs"
 description = "Encoder and decoder library for Azam Codec"
-categories = ["encoding", "decoding", "data-structures"]
+categories = ["encoding", "data-structures"]
 keywords = [ "azam", "identifier", "sortable" ]
 
 [lib]
